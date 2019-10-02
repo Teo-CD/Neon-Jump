@@ -67,6 +67,9 @@ public class PlayerMovements : MonoBehaviour
 
     public void Move(float horizontalMove, bool jump)
     {
+        float currentSpeed = _speed;
+        if (!_isGrounded) { currentSpeed = _speed * .7f; }
+
         // Horizontal movement
         Vector2 targetVelocity = new Vector2(horizontalMove * _speed, _playerBody.Velocity.y);
 
@@ -91,4 +94,9 @@ public class PlayerMovements : MonoBehaviour
         _playerBody.Velocity = newVelocity;
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(_groundCheck1.position, _groundedRadius);
+        Gizmos.DrawSphere(_groundCheck2.position, _groundedRadius);
+    }
 }
