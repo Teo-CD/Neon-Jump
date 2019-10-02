@@ -37,3 +37,7 @@ sysinfo.txt
 
 # Jetbrains IDE project directory
 .idea/
+
+# Ignore individual playgrounds
+
+**/*[Pp]layground*

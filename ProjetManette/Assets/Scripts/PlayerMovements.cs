@@ -68,7 +68,7 @@ public class PlayerMovements : MonoBehaviour
     public void Move(float horizontalMove, bool jump)
     {
         // Horizontal movement
-        Vector2 targetVelocity = new Vector2(horizontalMove * _speed, _playerBody.velocity.y);
+        Vector2 targetVelocity = new Vector2(horizontalMove * _speed, _playerBody.Velocity.y);
 
         if (jump)
         {
@@ -86,7 +86,9 @@ public class PlayerMovements : MonoBehaviour
             _isGrounded = false;
         }
 
-        _playerBody.velocity = Vector2.SmoothDamp(_playerBody.velocity, targetVelocity, ref _playerBody.velocity, _movementSmoothing);
+        Vector2 newVelocity = _playerBody.Velocity;
+        _playerBody.Velocity = Vector2.SmoothDamp(_playerBody.Velocity, targetVelocity, ref newVelocity, _movementSmoothing);
+        _playerBody.Velocity = newVelocity;
     }
 
 }
