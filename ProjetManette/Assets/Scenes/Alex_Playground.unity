@@ -570,9 +570,10 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 0
-  _groundCheck1: {fileID: 0}
-  _groundCheck2: {fileID: 0}
-  _ceilingCheck: {fileID: 0}
+  _groundCheck1: {fileID: 8392713}
+  _groundCheck2: {fileID: 914470922}
+  _groundedRadius: 0.02
+  _ceilingCheck: {fileID: 43430736}
 --- !u!114 &1152975019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -585,6 +586,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 559e8c8dff9bbaf4d91953d51aa4fe81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dragStrength: 0
+  _gravityStrength: 0
+  _minimumSpeed: 0
+  _velocity: {x: 0, y: 0}
 --- !u!61 &1152975020
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -709,7 +714,7 @@ GameObject:
   - component: {fileID: 1277366229}
   - component: {fileID: 1277366228}
   - component: {fileID: 1277366227}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -975,6 +980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02d0e020d4bb9bf428be0eff114a8522, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerMovements: {fileID: 1152975018}
 --- !u!4 &1991886877
 Transform:
   m_ObjectHideFlags: 0

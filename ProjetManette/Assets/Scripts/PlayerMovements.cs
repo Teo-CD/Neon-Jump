@@ -91,7 +91,7 @@ public class PlayerMovements : MonoBehaviour
 
         Vector2 newVelocity = _playerBody.Velocity;
         _playerBody.Velocity = Vector2.SmoothDamp(_playerBody.Velocity, targetVelocity, ref newVelocity, _movementSmoothing);
-        _playerBody.Velocity = newVelocity;
+        //_playerBody.Velocity = targetVelocity;
     }
 
     private void OnDrawGizmos()
