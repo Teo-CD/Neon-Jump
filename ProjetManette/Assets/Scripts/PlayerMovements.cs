@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovements : MonoBehaviour
 {
     #region GeneralMovements
-    Physics _playerBody;
+    CustomPhysics _playerBody;
 
     [SerializeField] private float _jumpForce = 25;
     [SerializeField] private float _speed = 10;
@@ -43,7 +43,7 @@ public class PlayerMovements : MonoBehaviour
 
     private void Awake()
     {
-        _playerBody = GetComponent<Physics>();
+        _playerBody = GetComponent<CustomPhysics>();
     }
 
 
@@ -93,8 +93,7 @@ public class PlayerMovements : MonoBehaviour
             }
             else if (!_isGrounded && _canDoubleJump)
             {
-                // Jump
-                Debug.Log("doubleJumped");
+                // DoubleJump
                 targetVelocity.y = _jumpForce;
                 _canDoubleJump = false;
             }
@@ -102,7 +101,6 @@ public class PlayerMovements : MonoBehaviour
         }
 
         Vector2 newVelocity = _playerBody.Velocity;
-        Debug.Log(targetVelocity);
         newVelocity = Vector2.SmoothDamp(_playerBody.Velocity, targetVelocity, ref newVelocity, _movementSmoothing);
         targetVelocity.x = newVelocity.x;
         _playerBody.Velocity = targetVelocity;

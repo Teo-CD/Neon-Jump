@@ -5,20 +5,20 @@ using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 
-public class Physics : MonoBehaviour
+public class CustomPhysics : MonoBehaviour
 {
     private Transform _transform;
-    
+
     // Physics tuning
-    [Range(0,1)][SerializeField] private float _dragStrength;
-    [Min(0)][SerializeField] private float _gravityStrength = 1.5f;
+    [Range(0, 1)] [SerializeField] private float _dragStrength;
+    [Min(0)] [SerializeField] private float _gravityStrength = 1.5f;
 
     // Speed under which the movement is completely stopped
-    [Min(0)][SerializeField] private float _minimumSpeed;
-    
-    
+    [Min(0)] [SerializeField] private float _minimumSpeed;
+
+
     // Entity related data
-    [ReadOnly][SerializeField] private Vector2 _velocity = Vector2.zero;
+    [ReadOnly] [SerializeField] private Vector2 _velocity = Vector2.zero;
     public Vector2 Velocity
     {
         get { return _velocity; }
@@ -50,7 +50,7 @@ public class Physics : MonoBehaviour
         {
             // TODO : Reset onGround and onWall
         }
-        
+
         if (Math.Abs(Velocity.magnitude) >= _minimumSpeed)
         {
             Vector2 deltaPos = Time.fixedDeltaTime * Velocity;
@@ -73,16 +73,16 @@ public class Physics : MonoBehaviour
         {
             Vector2 oneAxisVelocity = new Vector2();
             oneAxisVelocity[i] = Velocity[i];
-            
-            Debug.DrawLine(_transform.position,_transform.position+(Vector3)oneAxisVelocity.normalized,Color.green);
+
+            Debug.DrawLine(_transform.position, _transform.position + (Vector3)oneAxisVelocity.normalized, Color.green);
 
             // Cast a singular ray from the center
             RaycastHit2D raycastHit = Physics2D.Raycast(
                 _transform.position,
                 oneAxisVelocity.normalized,
-                oneAxisVelocity.magnitude * Time.fixedDeltaTime + _transform.localScale[i]/2);
+                oneAxisVelocity.magnitude * Time.fixedDeltaTime + _transform.localScale[i] / 2);
 
-            
+
             // If the ray did not hit anything, there might be something else under the corners
             if (raycastHit.collider == null)
             {
@@ -99,7 +99,7 @@ public class Physics : MonoBehaviour
                 // Takes into account the width of the cube as the singular ray is cast from the center
                 raycastHit.distance -= _transform.localScale[i] / 2;
             }
-            
+
             if (raycastHit.collider != null)
             {
                 _transform.position += (Vector3)oneAxisVelocity.normalized * raycastHit.distance;
