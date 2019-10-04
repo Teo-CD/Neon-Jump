@@ -11,7 +11,7 @@ public class Physics : MonoBehaviour
     
     // Physics tuning
     [Range(0,1)][SerializeField] private float _dragStrength;
-    [Min(0)][SerializeField] private float _gravityStrength;
+    [Min(0)][SerializeField] private float _gravityStrength = 1.5f;
 
     // Speed under which the movement is completely stopped
     [Min(0)][SerializeField] private float _minimumSpeed;

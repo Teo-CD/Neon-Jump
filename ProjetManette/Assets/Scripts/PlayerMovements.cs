@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class PlayerMovements : MonoBehaviour
 {
+    #region GeneralMovements
     Physics _playerBody;
 
-    [SerializeField] private float _jumpForce = 100;
-    [SerializeField] private float _speed = 30;
+    [SerializeField] private float _jumpForce = 25;
+    [SerializeField] private float _speed = 10;
 
     private float _jumpBuffer = .15f;
     [Range(0, .3f)] [SerializeField] float _movementSmoothing = .05f;
@@ -21,6 +22,24 @@ public class PlayerMovements : MonoBehaviour
     bool _canDoubleJump = true;
 
     [SerializeField] Transform _ceilingCheck;
+
+    #endregion
+
+    #region Dash
+    [SerializeField] private float _dashSpeed = 10;
+    public float DashSpeed
+    {
+        get { return _dashSpeed; }
+        set { _dashSpeed = value; }
+    }
+
+    [SerializeField] private float _dashCD = 2;
+    public float DashCooldown
+    {
+        get { return _dashCD; }
+        set { _dashCD = value; }
+    }
+    #endregion
 
     private void Awake()
     {
@@ -55,14 +74,6 @@ public class PlayerMovements : MonoBehaviour
         {
             _canDoubleJump = true;
         }
-        else
-        {
-            _jumpBuffer -= Time.deltaTime;
-            if (_jumpBuffer > 0)
-            {
-                _isGrounded = true;
-            }
-        }
     }
 
     public void Move(float horizontalMove, bool jump)
@@ -83,6 +94,7 @@ public class PlayerMovements : MonoBehaviour
             else if (!_isGrounded && _canDoubleJump)
             {
                 // Jump
+                Debug.Log("doubleJumped");
                 targetVelocity.y = _jumpForce;
                 _canDoubleJump = false;
             }
@@ -90,9 +102,12 @@ public class PlayerMovements : MonoBehaviour
         }
 
         Vector2 newVelocity = _playerBody.Velocity;
-        _playerBody.Velocity = Vector2.SmoothDamp(_playerBody.Velocity, targetVelocity, ref newVelocity, _movementSmoothing);
-        //_playerBody.Velocity = targetVelocity;
+        Debug.Log(targetVelocity);
+        newVelocity = Vector2.SmoothDamp(_playerBody.Velocity, targetVelocity, ref newVelocity, _movementSmoothing);
+        targetVelocity.x = newVelocity.x;
+        _playerBody.Velocity = targetVelocity;
     }
+
 
     private void OnDrawGizmos()
     {
