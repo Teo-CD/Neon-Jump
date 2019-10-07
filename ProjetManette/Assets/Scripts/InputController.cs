@@ -12,15 +12,10 @@ public class InputController : MonoBehaviour
         timer -= Time.fixedTime;
         float horizontalInput = Input.GetAxis("Horizontal");
         float crossPosition = 10 * Input.GetAxis("Horizontal_Cross");
-        bool jump = false;
-
-        if (Input.GetButtonDown("A") || Input.GetKeyDown(KeyCode.Space))
-        {
-            jump = true;
-        }
+        bool jump = Input.GetButtonDown("A") || Input.GetKeyDown(KeyCode.Space);
 
 
-        if (Input.GetButtonDown("B") && timer <= 0)
+        if ((Input.GetButtonDown("B") || Input.GetKeyDown(KeyCode.LeftShift)) && timer <= 0)
         {
             // Dash
             horizontalInput *= playerMovements.DashSpeed;
