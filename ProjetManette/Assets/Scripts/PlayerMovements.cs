@@ -14,14 +14,7 @@ public class PlayerMovements : MonoBehaviour
     [Range(0, .3f)] [SerializeField] float _movementSmoothing = .05f;
     bool _isDoubleJumping = false;
 
-    [SerializeField] LayerMask _groundLayer;
-    [SerializeField] Transform _groundCheck1;
-    [SerializeField] Transform _groundCheck2;
-    [SerializeField] float _groundedRadius;
-    bool _isGrounded = false;
     bool _canDoubleJump = true;
-
-    [SerializeField] Transform _ceilingCheck;
 
     #endregion
 
@@ -49,28 +42,7 @@ public class PlayerMovements : MonoBehaviour
 
     private void FixedUpdate()
     {
-        bool wasGrounded = _isGrounded;
-        _isGrounded = false;
-
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck1.position, _groundedRadius, _groundLayer);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (colliders[i].gameObject != gameObject)
-            {
-                _isGrounded = true;
-            }
-        }
-
-        colliders = Physics2D.OverlapCircleAll(_groundCheck2.position, _groundedRadius, _groundLayer);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (colliders[i].gameObject != gameObject)
-            {
-                _isGrounded = true;
-            }
-        }
-
-        if (_isGrounded)
+        if (_playerBody.OnGround)
         {
             _canDoubleJump = true;
         }
@@ -79,37 +51,29 @@ public class PlayerMovements : MonoBehaviour
     public void Move(float horizontalMove, bool jump)
     {
         float currentSpeed = _speed;
-        if (!_isGrounded) { currentSpeed = _speed * .7f; }
+        if (!_playerBody.OnGround) { currentSpeed = _speed * .7f; }
 
         // Horizontal movement
         Vector2 targetVelocity = new Vector2(horizontalMove * _speed, _playerBody.Velocity.y);
 
         if (jump)
         {
-            if (_isGrounded)
+            if (_playerBody.OnGround)
             {
                 // Jump
                 targetVelocity.y = _jumpForce;
             }
-            else if (!_isGrounded && _canDoubleJump)
+            else if (!_playerBody.OnGround && _canDoubleJump)
             {
                 // DoubleJump
                 targetVelocity.y = _jumpForce;
                 _canDoubleJump = false;
             }
-            _isGrounded = false;
         }
 
         Vector2 newVelocity = _playerBody.Velocity;
         newVelocity = Vector2.SmoothDamp(_playerBody.Velocity, targetVelocity, ref newVelocity, _movementSmoothing);
         targetVelocity.x = newVelocity.x;
         _playerBody.Velocity = targetVelocity;
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawSphere(_groundCheck1.position, _groundedRadius);
-        Gizmos.DrawSphere(_groundCheck2.position, _groundedRadius);
     }
 }

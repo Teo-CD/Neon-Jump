@@ -14,7 +14,7 @@ public class CustomPhysics : MonoBehaviour
     [Min(0)] [SerializeField] private float _gravityStrength = 1.5f;
 
     // Speed under which the movement is completely stopped
-    [Min(0)] [SerializeField] private float _minimumSpeed;
+    [Min(0)] [SerializeField] private float _minimumSpeed = 0.001f;
 
 
     // Entity related data
@@ -25,6 +25,13 @@ public class CustomPhysics : MonoBehaviour
         set { _velocity = value; }
     }
 
+    private bool _onGround = false;
+    public bool OnGround => _onGround;
+    private bool _onCeiling = false;
+    public bool OnCeiling => _onCeiling;
+    private bool _onWall = false;
+    public bool OnWall => _onWall;
+
     private void Start()
     {
         _transform = GetComponentInParent<Transform>();
@@ -32,6 +39,14 @@ public class CustomPhysics : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (OnGround)
+        {
+            GetComponentInParent<SpriteRenderer>().color = Color.green;
+        }
+        else
+        {
+            GetComponentInParent<SpriteRenderer>().color = Color.red;
+        }
         _velocity *= (1 - _dragStrength);
         _velocity.y -= _gravityStrength;
 
@@ -46,10 +61,7 @@ public class CustomPhysics : MonoBehaviour
             _velocity.y = 0;
         }
 
-        if (!manageCollision())
-        {
-            // TODO : Reset onGround and onWall
-        }
+        ManageCollision();
 
         if (Math.Abs(Velocity.magnitude) >= _minimumSpeed)
         {
@@ -57,6 +69,9 @@ public class CustomPhysics : MonoBehaviour
 
             _transform.position += new Vector3(deltaPos.x, deltaPos.y);
         }
+        Debug.DrawLine(_transform.position, _transform.position + new Vector3(Velocity.normalized.x,0), Color.green);
+        Debug.DrawLine(_transform.position, _transform.position + new Vector3(0,Velocity.normalized.y), Color.green);
+
     }
 
     /// <summary>
@@ -65,17 +80,14 @@ public class CustomPhysics : MonoBehaviour
     /// Casts a ray along the x and y movement of the player. If there is no hit, cast the full cube.
     /// If there is any hit, the velocity is canceled and the position set accordingly.
     /// <returns>True if there was a collision, false otherwise.</returns>
-    private bool manageCollision()
+    private void ManageCollision()
     {
-        bool collided = false;
         // Raycast on each axis independently
         for (int i = 0; i < 2; i++)
         {
             Vector2 oneAxisVelocity = new Vector2();
             oneAxisVelocity[i] = Velocity[i];
-
-            Debug.DrawLine(_transform.position, _transform.position + (Vector3)oneAxisVelocity.normalized, Color.green);
-
+            
             // Cast a singular ray from the center
             RaycastHit2D raycastHit = Physics2D.Raycast(
                 _transform.position,
@@ -108,11 +120,40 @@ public class CustomPhysics : MonoBehaviour
                 // If it is not, then null it.
                 if (_velocity[i] * raycastHit.normal[i] < 0)
                 {
+                    // Checks the side of the collision
+                    // FIXME : This is so dirty, my goodness
+                    if (i == 0)
+                    {
+                        _onWall = true;
+                    }
+                    else
+                    {
+                        if (_velocity[i] > 0)
+                        {
+                            _onCeiling = true;
+                            _onGround = false;
+                        }
+                        else if (_velocity[i] < 0)
+                        {
+                            _onCeiling = false;
+                            _onGround = true;
+                        }
+                    }
                     _velocity[i] = 0;
                 }
             }
-            collided = true;
+            else
+            {
+                if (i == 0)
+                {
+                    _onWall = false;
+                }
+                else
+                {
+                    _onCeiling = false;
+                    _onGround = false;
+                }
+            }
         }
-        return collided;
     }
 }
