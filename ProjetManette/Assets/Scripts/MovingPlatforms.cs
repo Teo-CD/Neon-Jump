@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class MovingPlatforms : MonoBehaviour
+public class MovingPlatforms : CustomMonoBehaviour
 {
     [SerializeField] Transform _firstPoint;
     [SerializeField] Transform _secondPoint;
@@ -64,20 +64,20 @@ public class MovingPlatforms : MonoBehaviour
         return false;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public override void OnCustomCollisionEnter(CustomCollision collision)
     {
-        if (collision.collider.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             collision.collider.transform.SetParent(transform);
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    public override void OnCustomCollisionExit(CustomCollision collision)
     {
-        if (collision.collider.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
             collision.collider.transform.SetParent(null);
-            collision.collider.GetComponent<Rigidbody2D>().velocity += _vectorDirection * _speed;
+            collision.collider.GetComponent<CustomPhysics>().Velocity += _vectorDirection * _speed;
         }
     }
 }

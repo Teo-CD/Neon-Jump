@@ -9,6 +9,9 @@ public class CustomPhysics : MonoBehaviour
 {
     private Transform _transform;
 
+    // Colliders currently currently affecting the object
+    private List<Collider2D> _colliders = new List<Collider2D>();
+    
     // Physics tuning
     [Range(0, 1)] [SerializeField] private float _dragStrength;
     [Min(0)] [SerializeField] private float _gravityStrength = 1.5f;
@@ -82,12 +85,12 @@ public class CustomPhysics : MonoBehaviour
     /// <returns>True if there was a collision, false otherwise.</returns>
     private void ManageCollision()
     {
+        int collisionCount = 0;
         // Raycast on each axis independently
         for (int i = 0; i < 2; i++)
         {
-            Vector2 oneAxisVelocity = new Vector2();
-            oneAxisVelocity[i] = Velocity[i];
-            
+            Vector2 oneAxisVelocity = new Vector2 {[i] = Velocity[i]};
+
             // Cast a singular ray from the center
             RaycastHit2D raycastHit = Physics2D.Raycast(
                 _transform.position,
@@ -114,6 +117,9 @@ public class CustomPhysics : MonoBehaviour
 
             if (raycastHit.collider != null)
             {
+                collisionCount++;
+                HandleCollisionEnterStay(raycastHit.collider);
+                
                 _transform.position += (Vector3)oneAxisVelocity.normalized * raycastHit.distance;
 
                 // Checks if the movement is in the same direction as the impact normal
@@ -152,6 +158,64 @@ public class CustomPhysics : MonoBehaviour
                 {
                     _onCeiling = false;
                     _onGround = false;
+                }
+            }
+        }
+        HandleCollisionExit(collisionCount);
+    }
+
+    /// <summary>
+    /// Handles the calls to OnCustomCollisionEnter and OnCustomCollisionStay. Colliders still colliding
+    /// are moved to the beginning of the _colliders in order to always keep active colliders at indices
+    /// less than collisionCount in ManageCollision().
+    /// </summary>
+    /// <param name="collidingObject">Incoming collider to check</param>
+    private void HandleCollisionEnterStay(Collider2D collidingObject)
+    {
+        var customPhysicsHandlers = collidingObject.gameObject.GetComponents<CustomMonoBehaviour>();
+        // If the object does not handle custom physics, do not take time searching for it
+        if (customPhysicsHandlers.Length == 0)
+        {
+            return;
+        }
+        
+        if (_colliders.Contains(collidingObject))
+        {
+            foreach (CustomMonoBehaviour customPhysicsHandler in customPhysicsHandlers)
+            {
+                customPhysicsHandler.OnCustomCollisionStay(new CustomCollision(gameObject));
+            }
+            
+            // TODO : Find a better way than searching for the object twice ?
+            _colliders.Remove(collidingObject);
+        }
+        else
+        {
+            foreach (CustomMonoBehaviour customPhysicsHandler in customPhysicsHandlers)
+            {
+                customPhysicsHandler.OnCustomCollisionEnter(new CustomCollision(gameObject));
+            }
+        }
+        _colliders.Insert(0,collidingObject);
+    }
+
+    /// <summary>
+    /// Calls OnCustomCollisionExit() for the objects which are no longer colliding with this object.
+    /// Removes their colliders from _colliders.
+    /// </summary>
+    /// <param name="collisionCount">Number of collisions to keep</param>
+    private void HandleCollisionExit(int collisionCount)
+    {
+        for (int i = collisionCount; i < _colliders.Count; i++)
+        {
+            var customPhysicsHandlers = _colliders[i].gameObject.GetComponents<CustomMonoBehaviour>();
+            _colliders.RemoveAt(i);
+            // If the object does not handle custom physics, skip it
+            if (customPhysicsHandlers.Length != 0)
+            {
+                foreach (CustomMonoBehaviour customPhysicsHandler in customPhysicsHandlers)
+                {
+                    customPhysicsHandler.OnCustomCollisionExit(new CustomCollision(gameObject));
                 }
             }
         }
