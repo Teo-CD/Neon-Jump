@@ -9,6 +9,7 @@ public class PlayerMovements : MonoBehaviour
 
     [SerializeField] private float _jumpForce = 25;
     [SerializeField] private float _speed = 10;
+    [Range(0, 1f)] [SerializeField] private float _airborneSpeedMultiplier = 0.7f;
 
     private float _jumpBuffer = .15f;
     [Range(0, .3f)] [SerializeField] float _movementSmoothing = .05f;
@@ -51,10 +52,10 @@ public class PlayerMovements : MonoBehaviour
     public void Move(float horizontalMove, bool jump)
     {
         float currentSpeed = _speed;
-        if (!_playerBody.OnGround) { currentSpeed = _speed * .7f; }
+        if (!_playerBody.OnGround) { currentSpeed = _speed * _airborneSpeedMultiplier; }
 
         // Horizontal movement
-        Vector2 targetVelocity = new Vector2(horizontalMove * _speed, _playerBody.Velocity.y);
+        Vector2 targetVelocity = new Vector2(horizontalMove * currentSpeed, _playerBody.Velocity.y);
 
         if (jump)
         {
