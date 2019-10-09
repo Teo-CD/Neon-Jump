@@ -95,7 +95,7 @@ public class CustomPhysics : MonoBehaviour
             RaycastHit2D raycastHit = Physics2D.Raycast(
                 _transform.position,
                 oneAxisVelocity.normalized,
-                oneAxisVelocity.magnitude * Time.fixedDeltaTime + _transform.localScale[i] / 2);
+                oneAxisVelocity.magnitude * Time.fixedDeltaTime + _transform.lossyScale[i] / 2);
 
 
             // If the ray did not hit anything, there might be something else under the corners
@@ -112,7 +112,7 @@ public class CustomPhysics : MonoBehaviour
             else
             {
                 // Takes into account the width of the cube as the singular ray is cast from the center
-                raycastHit.distance -= _transform.localScale[i] / 2;
+                raycastHit.distance -= _transform.lossyScale[i] / 2;
             }
 
             if (raycastHit.collider != null)
