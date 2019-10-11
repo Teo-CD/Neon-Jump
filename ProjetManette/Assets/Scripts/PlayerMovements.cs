@@ -8,6 +8,8 @@ public class PlayerMovements : MonoBehaviour
     CustomPhysics _playerBody;
 
     [SerializeField] private float _jumpForce = 25;
+    [SerializeField] private float _wallJumpForce = 100;
+    [SerializeField] private Vector2 _wallJumpVector = Vector2.right+Vector2.up*0.2f;
     [SerializeField] private float _speed = 10;
     [Range(0, 1f)] [SerializeField] private float _airborneSpeedMultiplier = 0.7f;
 
@@ -63,6 +65,11 @@ public class PlayerMovements : MonoBehaviour
             {
                 // Jump
                 targetVelocity.y = _jumpForce;
+            }
+            else if (_playerBody.OnWall)
+            {
+                Vector2 wallJumpVelocity = new Vector2(_wallJumpVector.x * _playerBody.WallNormal.x, _wallJumpVector.y);
+                targetVelocity = wallJumpVelocity.normalized * _wallJumpForce;
             }
             else if (!_playerBody.OnGround && _canDoubleJump)
             {

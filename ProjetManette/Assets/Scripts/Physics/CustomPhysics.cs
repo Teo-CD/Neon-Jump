@@ -28,12 +28,12 @@ public class CustomPhysics : MonoBehaviour
         set { _velocity = value; }
     }
 
-    private bool _onGround = false;
-    public bool OnGround => _onGround;
-    private bool _onCeiling = false;
-    public bool OnCeiling => _onCeiling;
-    private bool _onWall = false;
-    public bool OnWall => _onWall;
+    [SerializeField] private bool[] _collidingSide = new bool[4];
+    
+    public bool OnGround => _collidingSide[3];
+    public bool OnCeiling => _collidingSide[2];
+    public bool OnWall => _collidingSide[0] || _collidingSide[1];
+    public Vector2 WallNormal => _collidingSide[0] ? Vector2.left : _collidingSide[1] ? Vector2.right : Vector2.zero;
 
     private void Start()
     {
@@ -127,38 +127,30 @@ public class CustomPhysics : MonoBehaviour
                 if (_velocity[i] * raycastHit.normal[i] < 0)
                 {
                     // Checks the side of the collision
-                    // FIXME : This is so dirty, my goodness
-                    if (i == 0)
+
+                    if (_velocity[i] > 0)
                     {
-                        _onWall = true;
+                        _collidingSide[2*i] = true;
+                        _collidingSide[2*i+1] = false;
+                    }
+                    else if (_velocity[i] < 0)
+                    {
+                        _collidingSide[2*i] = false;
+                        _collidingSide[2*i+1] = true;
                     }
                     else
                     {
-                        if (_velocity[i] > 0)
-                        {
-                            _onCeiling = true;
-                            _onGround = false;
-                        }
-                        else if (_velocity[i] < 0)
-                        {
-                            _onCeiling = false;
-                            _onGround = true;
-                        }
+                        _collidingSide[2*i] = false;
+                        _collidingSide[2*i+1] = false;
                     }
+
                     _velocity[i] = 0;
                 }
             }
             else
             {
-                if (i == 0)
-                {
-                    _onWall = false;
-                }
-                else
-                {
-                    _onCeiling = false;
-                    _onGround = false;
-                }
+                _collidingSide[2*i] = false;
+                _collidingSide[2*i+1] = false;
             }
         }
         HandleCollisionExit(collisionCount);
