@@ -84,4 +84,9 @@ public class PlayerMovements : MonoBehaviour
         targetVelocity.x = newVelocity.x;
         _playerBody.Velocity = targetVelocity;
     }
+
+    public void Fall()
+    {
+        _playerBody.Falling = true;
+    }
 }

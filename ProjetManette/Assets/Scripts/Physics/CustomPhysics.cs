@@ -42,6 +42,14 @@ public class CustomPhysics : MonoBehaviour
     public bool OnWall => _collidingSide[0] || _collidingSide[1];
     public Vector2 WallNormal => _collidingSide[0] ? Vector2.left : _collidingSide[1] ? Vector2.right : Vector2.zero;
 
+    // Controls whether or not the player falls through platforms
+    [SerializeField] private bool _falling;
+    public bool Falling
+    {
+        get { return _falling; }
+        set { _falling = value; }
+    }
+
     private void Start()
     {
         _transform = GetComponentInParent<Transform>();
@@ -134,12 +142,17 @@ public class CustomPhysics : MonoBehaviour
                 collisionCount++;
                 HandleCollisionEnterStay(raycastHit.collider);
 
-                CollisionUpdate(raycastHit,axis,oneAxisVelocity);
+                CollisionUpdate(raycastHit,axis);
             }
             else
             {
                 _collidingSide[2 * axis] = false;
                 _collidingSide[2 * axis + 1] = false;
+                
+                if (axis == (int) Axis.Y)
+                {
+                    _falling = false;
+                }
             }
         }
 
@@ -151,17 +164,19 @@ public class CustomPhysics : MonoBehaviour
     /// </summary>
     /// <param name="raycastHit">Hit from the raycast</param>
     /// <param name="axis">Axis the collision occured on</param>
-    /// <param name="velocity">Velocity on this axis</param>
-    private void CollisionUpdate(RaycastHit2D raycastHit, int axis, Vector2 velocity)
+    private void CollisionUpdate(RaycastHit2D raycastHit, int axis)
     {
-        // Go through platforms if coming from the bottom or sides
+        // Go through platforms if coming from the bottom or sides or if falling down from it
         if (raycastHit.collider.gameObject.CompareTag("Platform") &&
-            (_velocity[(int)Axis.Y] > 0 ||
+            (_falling || 
+             _velocity[(int)Axis.Y] > 0 ||
              axis == (int)Axis.X))
         {
             return;
         }
         
+        _falling = false;
+
         // Checks if the movement is in the same direction as the impact normal
         // If it is not, then null it.
         if (_velocity[axis] * raycastHit.normal[axis] < 0)
