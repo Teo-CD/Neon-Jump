@@ -7,15 +7,20 @@ public class InputController : MonoBehaviour
     [SerializeField] PlayerMovements playerMovements;
     private float timer;
 
+    private bool _holdingJump;
+
     void FixedUpdate()
     {
         timer -= Time.fixedTime;
         float horizontalInput = Input.GetAxis("Horizontal");
         float crossPosition = 10 * Input.GetAxis("Horizontal_Cross");
-        bool jump = Input.GetButtonDown("A") || Input.GetKeyDown(KeyCode.Space);
+        bool jump = Input.GetButton("A") || Input.GetKey(KeyCode.Space);
 
+        // The player has to stop pressing jump to jump again
+        bool jumpAction = jump & !_holdingJump;
+        _holdingJump = jump;
 
-        if ((Input.GetButtonDown("B") || Input.GetKeyDown(KeyCode.LeftShift)) && timer <= 0)
+        if ((Input.GetButton("B") || Input.GetKey(KeyCode.LeftShift)) && timer <= 0)
         {
             // Dash
             horizontalInput *= playerMovements.DashSpeed;
@@ -30,6 +35,6 @@ public class InputController : MonoBehaviour
         //      ;
         //  else ;
 
-        playerMovements.Move(horizontalInput, jump);
+        playerMovements.Move(horizontalInput, jumpAction);
     }
 }
