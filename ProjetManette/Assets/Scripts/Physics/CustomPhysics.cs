@@ -229,14 +229,14 @@ public class CustomPhysics : MonoBehaviour
         int colliderIndex = -1;
         for (int i = 0; i < _colliders.Count; i++)
         {
-            if (_colliders[i] == collidingObject)
+            if (_colliders[i].Equals(collidingObject))
             {
                 colliderIndex = i;
                 break;
             }
         }
         
-        if (colliderIndex > 0)
+        if (colliderIndex >= 0)
         {
             foreach (CustomMonoBehaviour customPhysicsHandler in customPhysicsHandlers)
             {
