@@ -208,16 +208,27 @@ public class CustomPhysics : MonoBehaviour
         {
             return;
         }
+
+        // Find the collider in the list.
+        // As there will never be more than a few items, it is more efficient to search manually.
+        int colliderIndex = -1;
+        for (int i = 0; i < _colliders.Count; i++)
+        {
+            if (_colliders[i] == collidingObject)
+            {
+                colliderIndex = i;
+                break;
+            }
+        }
         
-        if (_colliders.Contains(collidingObject))
+        if (colliderIndex > 0)
         {
             foreach (CustomMonoBehaviour customPhysicsHandler in customPhysicsHandlers)
             {
                 customPhysicsHandler.OnCustomCollisionStay(new CustomCollision(gameObject));
             }
             
-            // TODO : Find a better way than searching for the object twice ?
-            _colliders.Remove(collidingObject);
+            _colliders.RemoveAt(colliderIndex);
         }
         else
         {
