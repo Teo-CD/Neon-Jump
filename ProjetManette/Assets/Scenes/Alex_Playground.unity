@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 119334412}
   m_Layer: 8
   m_Name: Platform (8)
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1302,11 +1302,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _jumpForce: 25
+  _wallJumpForce: 100
+  _wallJumpVector: {x: 1, y: 0.2}
   _speed: 10
   _airborneSpeedMultiplier: 0.7
   _movementSmoothing: 0.05
-  _dashSpeed: 10
-  _dashCD: 2
+  _dashSpeed: 20
+  _dashCD: 5
 --- !u!114 &1152975019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1323,6 +1325,7 @@ MonoBehaviour:
   _gravityStrength: 1.5
   _minimumSpeed: 0.001
   _velocity: {x: 0, y: 0}
+  _collidingSide: 00000000
 --- !u!61 &1152975020
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1532,7 +1535,7 @@ GameObject:
   - component: {fileID: 1340128863}
   m_Layer: 8
   m_Name: Platform (1)
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1616,7 +1619,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: a8d7b75756866d844b9510c12b746b59, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.49019608}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

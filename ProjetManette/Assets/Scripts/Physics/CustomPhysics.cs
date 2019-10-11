@@ -5,13 +5,19 @@ using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 
+enum Axis
+{
+    X = 0,
+    Y = 1,
+}
+
 public class CustomPhysics : MonoBehaviour
 {
     private Transform _transform;
 
     // Colliders currently currently affecting the object
     private List<Collider2D> _colliders = new List<Collider2D>();
-    
+
     // Physics tuning
     [Range(0, 1)] [SerializeField] private float _dragStrength;
     [Min(0)] [SerializeField] private float _gravityStrength = 1.5f;
@@ -22,6 +28,7 @@ public class CustomPhysics : MonoBehaviour
 
     // Entity related data
     [ReadOnly] [SerializeField] private Vector2 _velocity = Vector2.zero;
+
     public Vector2 Velocity
     {
         get { return _velocity; }
@@ -29,7 +36,7 @@ public class CustomPhysics : MonoBehaviour
     }
 
     [SerializeField] private bool[] _collidingSide = new bool[4];
-    
+
     public bool OnGround => _collidingSide[3];
     public bool OnCeiling => _collidingSide[2];
     public bool OnWall => _collidingSide[0] || _collidingSide[1];
@@ -50,6 +57,7 @@ public class CustomPhysics : MonoBehaviour
         {
             GetComponentInParent<SpriteRenderer>().color = Color.red;
         }
+
         _velocity *= (1 - _dragStrength);
         _velocity.y -= _gravityStrength;
 
@@ -64,7 +72,7 @@ public class CustomPhysics : MonoBehaviour
             _velocity.y = 0;
         }
 
-        ManageCollision();
+        DetectCollision();
 
         if (Math.Abs(Velocity.magnitude) >= _minimumSpeed)
         {
@@ -72,8 +80,9 @@ public class CustomPhysics : MonoBehaviour
 
             _transform.position += new Vector3(deltaPos.x, deltaPos.y);
         }
-        Debug.DrawLine(_transform.position, _transform.position + new Vector3(Velocity.normalized.x,0), Color.green);
-        Debug.DrawLine(_transform.position, _transform.position + new Vector3(0,Velocity.normalized.y), Color.green);
+
+        Debug.DrawLine(_transform.position, _transform.position + new Vector3(Velocity.normalized.x, 0), Color.green);
+        Debug.DrawLine(_transform.position, _transform.position + new Vector3(0, Velocity.normalized.y), Color.green);
 
     }
 
@@ -83,19 +92,19 @@ public class CustomPhysics : MonoBehaviour
     /// Casts a ray along the x and y movement of the player. If there is no hit, cast the full cube.
     /// If there is any hit, the velocity is canceled and the position set accordingly.
     /// <returns>True if there was a collision, false otherwise.</returns>
-    private void ManageCollision()
+    private void DetectCollision()
     {
         int collisionCount = 0;
         // Raycast on each axis independently
-        for (int i = 0; i < 2; i++)
+        foreach (int axis in Enum.GetValues(typeof(Axis)))
         {
-            Vector2 oneAxisVelocity = new Vector2 {[i] = Velocity[i]};
+            Vector2 oneAxisVelocity = new Vector2 {[axis] = Velocity[axis]};
 
             // Cast a singular ray from the center
             RaycastHit2D raycastHit = Physics2D.Raycast(
                 _transform.position,
                 oneAxisVelocity.normalized,
-                oneAxisVelocity.magnitude * Time.fixedDeltaTime + _transform.lossyScale[i] / 2);
+                oneAxisVelocity.magnitude * Time.fixedDeltaTime + _transform.lossyScale[axis] / 2);
 
 
             // If the ray did not hit anything, there might be something else under the corners
@@ -112,48 +121,67 @@ public class CustomPhysics : MonoBehaviour
             else
             {
                 // Takes into account the width of the cube as the singular ray is cast from the center
-                raycastHit.distance -= _transform.lossyScale[i] / 2;
+                raycastHit.distance -= _transform.lossyScale[axis] / 2;
             }
 
             if (raycastHit.collider != null)
             {
                 collisionCount++;
                 HandleCollisionEnterStay(raycastHit.collider);
-                
-                _transform.position += (Vector3)oneAxisVelocity.normalized * raycastHit.distance;
 
-                // Checks if the movement is in the same direction as the impact normal
-                // If it is not, then null it.
-                if (_velocity[i] * raycastHit.normal[i] < 0)
-                {
-                    // Checks the side of the collision
-
-                    if (_velocity[i] > 0)
-                    {
-                        _collidingSide[2*i] = true;
-                        _collidingSide[2*i+1] = false;
-                    }
-                    else if (_velocity[i] < 0)
-                    {
-                        _collidingSide[2*i] = false;
-                        _collidingSide[2*i+1] = true;
-                    }
-                    else
-                    {
-                        _collidingSide[2*i] = false;
-                        _collidingSide[2*i+1] = false;
-                    }
-
-                    _velocity[i] = 0;
-                }
+                CollisionUpdate(raycastHit,axis,oneAxisVelocity);
             }
             else
             {
-                _collidingSide[2*i] = false;
-                _collidingSide[2*i+1] = false;
+                _collidingSide[2 * axis] = false;
+                _collidingSide[2 * axis + 1] = false;
             }
         }
+
         HandleCollisionExit(collisionCount);
+    }
+
+    /// <summary>
+    /// Update the player state after the collision : position, speed and collision status.
+    /// </summary>
+    /// <param name="raycastHit">Hit from the raycast</param>
+    /// <param name="axis">Axis the collision occured on</param>
+    /// <param name="velocity">Velocity on this axis</param>
+    private void CollisionUpdate(RaycastHit2D raycastHit, int axis, Vector2 velocity)
+    {
+        // Go through platforms if coming from the bottom or sides
+        if (raycastHit.collider.gameObject.CompareTag("Platform") &&
+            (_velocity[(int)Axis.Y] > 0 ||
+             axis == (int)Axis.X))
+        {
+            return;
+        }
+        
+        // Checks if the movement is in the same direction as the impact normal
+        // If it is not, then null it.
+        if (_velocity[axis] * raycastHit.normal[axis] < 0)
+        {
+            // Checks the side of the collision
+            if (_velocity[axis] > 0)
+            {
+                _collidingSide[2 * axis] = true;
+                _collidingSide[2 * axis + 1] = false;
+            }
+            else if (_velocity[axis] < 0)
+            {
+                _collidingSide[2 * axis] = false;
+                _collidingSide[2 * axis + 1] = true;
+            }
+            else
+            {
+                _collidingSide[2 * axis] = false;
+                _collidingSide[2 * axis + 1] = false;
+            }
+
+            _velocity[axis] = 0;
+            
+        }
+        _transform.position += (Vector3) velocity.normalized * raycastHit.distance;
     }
 
     /// <summary>
