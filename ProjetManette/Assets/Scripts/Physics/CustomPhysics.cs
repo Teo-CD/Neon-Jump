@@ -53,6 +53,10 @@ public class CustomPhysics : MonoBehaviour
         {
             GetComponentInParent<SpriteRenderer>().color = Color.green;
         }
+        else if (OnWall)
+        {
+            GetComponentInParent<SpriteRenderer>().color = Color.white;
+        }
         else
         {
             GetComponentInParent<SpriteRenderer>().color = Color.red;
@@ -110,10 +114,11 @@ public class CustomPhysics : MonoBehaviour
             // If the ray did not hit anything, there might be something else under the corners
             if (raycastHit.collider == null)
             {
-                // So cast a the full box of the player
+                // So cast a the resized box of the player
+                // in order to prevent detecting collisions on the same axis twice.
                 raycastHit = Physics2D.BoxCast(
                     _transform.position,
-                    _transform.lossyScale,
+                    _transform.lossyScale*0.95f,
                     0,
                     oneAxisVelocity.normalized,
                     oneAxisVelocity.magnitude * Time.fixedDeltaTime);
@@ -181,7 +186,12 @@ public class CustomPhysics : MonoBehaviour
             _velocity[axis] = 0;
             
         }
-        _transform.position += (Vector3) velocity.normalized * raycastHit.distance;
+
+        // Compute the position that prevents the collision
+        var relativeDirection = raycastHit.point[axis] - _transform.position[axis] < 0 ? 1 : -1;
+        var newPosition = _transform.position;
+        newPosition[axis] = raycastHit.point[axis] + relativeDirection * _transform.lossyScale[axis]/2;
+        _transform.position = newPosition;
     }
 
     /// <summary>
