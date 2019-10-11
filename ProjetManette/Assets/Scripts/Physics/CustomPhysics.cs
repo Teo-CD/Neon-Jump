@@ -104,7 +104,7 @@ public class CustomPhysics : MonoBehaviour
                 // So cast a the full box of the player
                 raycastHit = Physics2D.BoxCast(
                     _transform.position,
-                    _transform.localScale,
+                    _transform.lossyScale,
                     0,
                     oneAxisVelocity.normalized,
                     oneAxisVelocity.magnitude * Time.fixedDeltaTime);

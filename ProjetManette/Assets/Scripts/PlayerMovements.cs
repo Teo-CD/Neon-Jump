@@ -20,14 +20,14 @@ public class PlayerMovements : MonoBehaviour
     #endregion
 
     #region Dash
-    [SerializeField] private float _dashSpeed = 10;
+    [SerializeField] private float _dashSpeed = 20;
     public float DashSpeed
     {
         get { return _dashSpeed; }
         set { _dashSpeed = value; }
     }
 
-    [SerializeField] private float _dashCD = 2;
+    [SerializeField] private float _dashCD = 5;
     public float DashCooldown
     {
         get { return _dashCD; }
