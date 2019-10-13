@@ -11,16 +11,17 @@ public class InputController : MonoBehaviour
 
     void FixedUpdate()
     {
-        timer -= Time.fixedTime;
+        timer -= Time.fixedDeltaTime;
         float horizontalInput = Input.GetAxis("Horizontal");
-        float crossPosition = 10 * Input.GetAxis("Horizontal_Cross");
+        float verticalInput = Input.GetAxis("Vertical");
+        //float crossPosition = 10 * Input.GetAxis("Horizontal_Cross");
         bool jump = Input.GetButton("A") || Input.GetKey(KeyCode.Space);
 
         // The player has to stop pressing jump to jump again
         bool jumpAction = jump & !_holdingJump;
         _holdingJump = jump;
 
-        if ((Input.GetButton("B") || Input.GetKey(KeyCode.LeftShift)) && timer <= 0)
+        if ((Input.GetButton("RB") || Input.GetKey(KeyCode.LeftShift)) && timer <= 0)
         {
             // Dash
             horizontalInput *= playerMovements.DashSpeed;
@@ -40,6 +41,12 @@ public class InputController : MonoBehaviour
         {
             playerMovements.Fall();
         }
+        else if (Input.GetButton("LB"))
+        {
+            Debug.Log("VertInput " + verticalInput);   
+            playerMovements.WallGrab(verticalInput);
+        }
+
         else
         {
             playerMovements.Move(horizontalInput, jumpAction);

@@ -6,10 +6,11 @@ public class PlayerMovements : MonoBehaviour
 {
     #region GeneralMovements
     CustomPhysics _playerBody;
+    Vector2 _spawnPos;
 
     [SerializeField] private float _jumpForce = 25;
     [SerializeField] private float _wallJumpForce = 100;
-    [SerializeField] private Vector2 _wallJumpVector = Vector2.right+Vector2.up*0.2f;
+    [SerializeField] private Vector2 _wallJumpVector = Vector2.right + Vector2.up * 0.2f;
     [SerializeField] private float _speed = 10;
     [Range(0, 1f)] [SerializeField] private float _airborneSpeedMultiplier = 0.7f;
 
@@ -40,6 +41,7 @@ public class PlayerMovements : MonoBehaviour
     private void Awake()
     {
         _playerBody = GetComponent<CustomPhysics>();
+        _spawnPos = gameObject.transform.position;
     }
 
 
@@ -68,6 +70,7 @@ public class PlayerMovements : MonoBehaviour
             }
             else if (_playerBody.OnWall)
             {
+                // WallJump
                 Vector2 wallJumpVelocity = new Vector2(_wallJumpVector.x * _playerBody.WallNormal.x, _wallJumpVector.y);
                 targetVelocity = wallJumpVelocity.normalized * _wallJumpForce;
             }
@@ -88,5 +91,21 @@ public class PlayerMovements : MonoBehaviour
     public void Fall()
     {
         _playerBody.Falling = true;
+    }
+
+    public void WallGrab(float verticalInput)
+    {
+        //if (_playerBody.OnWall) not working, may be because collision is erratic
+        {
+            
+            float newYVelocity = verticalInput * _speed * .4f;
+            _playerBody.Velocity = new Vector2(_playerBody.Velocity.x, newYVelocity + _playerBody.GravityStrenght);
+        }
+
+    }
+
+    public void Die()
+    {
+        gameObject.transform.position = new Vector3(_spawnPos.x, _spawnPos.y, 0);
     }
 }

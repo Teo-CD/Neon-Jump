@@ -15,12 +15,13 @@ public class CustomPhysics : MonoBehaviour
 {
     private Transform _transform;
 
-    // Colliders currently currently affecting the object
+    // Colliders currently affecting the object
     private List<Collider2D> _colliders = new List<Collider2D>();
 
     // Physics tuning
     [Range(0, 1)] [SerializeField] private float _dragStrength;
     [Min(0)] [SerializeField] private float _gravityStrength = 1.5f;
+    public float GravityStrenght => _gravityStrength;
 
     // Speed under which the movement is completely stopped
     [Min(0)] [SerializeField] private float _minimumSpeed = 0.001f;
@@ -50,6 +51,9 @@ public class CustomPhysics : MonoBehaviour
         set { _falling = value; }
     }
 
+    [SerializeField] private bool _isWallGrabing = false;
+    public bool IsWallGrabing => _isWallGrabing;
+
     private void Start()
     {
         _transform = GetComponentInParent<Transform>();
@@ -57,21 +61,37 @@ public class CustomPhysics : MonoBehaviour
 
     private void FixedUpdate()
     {
+        _velocity *= (1 - _dragStrength);
         if (OnGround)
         {
             GetComponentInParent<SpriteRenderer>().color = Color.green;
+            _velocity.y -= _gravityStrength;
         }
         else if (OnWall)
         {
             GetComponentInParent<SpriteRenderer>().color = Color.white;
+            if (_isWallGrabing)
+            {
+                _velocity.y = 0;
+            }
+
+            else if (_velocity.y <= -0.5f)
+            {
+                _velocity.y -= _gravityStrength * .2f; // Sliding effect 
+                // We need to add small horiz velocity opposite to wall normal so that it stays in collision
+            }
+            else
+            {
+                _velocity.y -= _gravityStrength;
+            }
+
         }
         else
         {
             GetComponentInParent<SpriteRenderer>().color = Color.red;
+            _velocity.y -= _gravityStrength;
         }
 
-        _velocity *= (1 - _dragStrength);
-        _velocity.y -= _gravityStrength;
 
         // Null the speed if it is too small
         if (Math.Abs(_velocity.x) < _minimumSpeed)
@@ -110,7 +130,7 @@ public class CustomPhysics : MonoBehaviour
         // Raycast on each axis independently
         foreach (int axis in Enum.GetValues(typeof(Axis)))
         {
-            Vector2 oneAxisVelocity = new Vector2 {[axis] = Velocity[axis]};
+            Vector2 oneAxisVelocity = new Vector2 { [axis] = Velocity[axis] };
 
             // Cast a singular ray from the center
             RaycastHit2D raycastHit = Physics2D.Raycast(
@@ -126,7 +146,7 @@ public class CustomPhysics : MonoBehaviour
                 // in order to prevent detecting collisions on the same axis twice.
                 raycastHit = Physics2D.BoxCast(
                     _transform.position,
-                    _transform.lossyScale*0.95f,
+                    _transform.lossyScale * 0.95f,
                     0,
                     oneAxisVelocity.normalized,
                     oneAxisVelocity.magnitude * Time.fixedDeltaTime);
@@ -142,14 +162,14 @@ public class CustomPhysics : MonoBehaviour
                 collisionCount++;
                 HandleCollisionEnterStay(raycastHit.collider);
 
-                CollisionUpdate(raycastHit,axis);
+                CollisionUpdate(raycastHit, axis);
             }
             else
             {
                 _collidingSide[2 * axis] = false;
                 _collidingSide[2 * axis + 1] = false;
-                
-                if (axis == (int) Axis.Y)
+
+                if (axis == (int)Axis.Y)
                 {
                     _falling = false;
                 }
@@ -168,13 +188,13 @@ public class CustomPhysics : MonoBehaviour
     {
         // Go through platforms if coming from the bottom or sides or if falling down from it
         if (raycastHit.collider.gameObject.CompareTag("Platform") &&
-            (_falling || 
+            (_falling ||
              _velocity[(int)Axis.Y] > 0 ||
              axis == (int)Axis.X))
         {
             return;
         }
-        
+
         _falling = false;
 
         // Checks if the movement is in the same direction as the impact normal
@@ -199,13 +219,13 @@ public class CustomPhysics : MonoBehaviour
             }
 
             _velocity[axis] = 0;
-            
+
         }
 
         // Compute the position that prevents the collision
         var relativeDirection = raycastHit.point[axis] - _transform.position[axis] < 0 ? 1 : -1;
         var newPosition = _transform.position;
-        newPosition[axis] = raycastHit.point[axis] + relativeDirection * _transform.lossyScale[axis]/2;
+        newPosition[axis] = raycastHit.point[axis] + relativeDirection * _transform.lossyScale[axis] / 2;
         _transform.position = newPosition;
     }
 
@@ -235,14 +255,14 @@ public class CustomPhysics : MonoBehaviour
                 break;
             }
         }
-        
+
         if (colliderIndex >= 0)
         {
             foreach (CustomMonoBehaviour customPhysicsHandler in customPhysicsHandlers)
             {
                 customPhysicsHandler.OnCustomCollisionStay(new CustomCollision(gameObject));
             }
-            
+
             _colliders.RemoveAt(colliderIndex);
         }
         else
@@ -252,7 +272,7 @@ public class CustomPhysics : MonoBehaviour
                 customPhysicsHandler.OnCustomCollisionEnter(new CustomCollision(gameObject));
             }
         }
-        _colliders.Insert(0,collidingObject);
+        _colliders.Insert(0, collidingObject);
     }
 
     /// <summary>
