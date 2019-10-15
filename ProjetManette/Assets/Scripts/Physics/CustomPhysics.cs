@@ -85,13 +85,14 @@ public class CustomPhysics : MonoBehaviour
         {
             downVelocity *= 0.2f;
         }
-        _velocity.y -= downVelocity;
         
         if (_isWallGrabing)
         {
-            _velocity.y = 0;
+            downVelocity = 0;
         }
         
+        _velocity.y -= downVelocity;
+
         // Null the speed if it is too small
         if (Math.Abs(_velocity.x) < _minimumSpeed)
         {
