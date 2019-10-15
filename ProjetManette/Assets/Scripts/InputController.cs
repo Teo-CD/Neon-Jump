@@ -37,7 +37,7 @@ public class InputController : MonoBehaviour
         //  else ;
 
         // FIXME : Find the best way to register the combination to go down
-        if (jump && Input.GetAxis("Vertical_Cross") < 0)
+        if (jump && Input.GetAxis("Vertical") < 0)
         {
             playerMovements.Fall();
         }
