@@ -52,7 +52,11 @@ public class CustomPhysics : MonoBehaviour
     }
 
     [SerializeField] private bool _isWallGrabing = false;
-    public bool IsWallGrabing => _isWallGrabing;
+    public bool IsWallGrabing
+    {
+        get { return _isWallGrabing;}
+        set { _isWallGrabing = value; }
+    }
 
     private void Start()
     {
@@ -85,7 +89,7 @@ public class CustomPhysics : MonoBehaviour
         {
             downVelocity *= 0.2f;
         }
-        
+
         if (_isWallGrabing)
         {
             downVelocity = 0;

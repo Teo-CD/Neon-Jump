@@ -50,6 +50,7 @@ public class PlayerMovements : MonoBehaviour
         if (_playerBody.OnGround)
         {
             _canDoubleJump = true;
+            _playerBody.IsWallGrabing = false;
         }
     }
 
@@ -63,6 +64,7 @@ public class PlayerMovements : MonoBehaviour
 
         if (jump)
         {
+            _playerBody.IsWallGrabing = false;
             if (_playerBody.OnGround)
             {
                 // Jump
@@ -95,12 +97,17 @@ public class PlayerMovements : MonoBehaviour
 
     public void WallGrab(float verticalInput)
     {
-        //if (_playerBody.OnWall) not working, may be because collision is erratic
+        if (_playerBody.OnWall)
         {
-            
-            float newYVelocity = verticalInput * _speed * .4f;
-            _playerBody.Velocity = new Vector2(_playerBody.Velocity.x, newYVelocity + _playerBody.GravityStrenght);
+            _playerBody.IsWallGrabing = true;
         }
+
+        if (_playerBody.IsWallGrabing)
+        {
+            float newYVelocity = verticalInput * _speed * .4f;
+            _playerBody.Velocity = new Vector2(_playerBody.Velocity.x,  newYVelocity + _playerBody.GravityStrenght);
+        }
+        
 
     }
 
