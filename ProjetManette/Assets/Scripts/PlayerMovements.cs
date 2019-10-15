@@ -50,7 +50,7 @@ public class PlayerMovements : MonoBehaviour
         if (_playerBody.OnGround)
         {
             _canDoubleJump = true;
-            _playerBody.IsWallGrabing = false;
+            _playerBody.IsWallGrabbing = false;
         }
     }
 
@@ -64,7 +64,7 @@ public class PlayerMovements : MonoBehaviour
 
         if (jump)
         {
-            _playerBody.IsWallGrabing = false;
+            _playerBody.IsWallGrabbing = false;
             if (_playerBody.OnGround)
             {
                 // Jump
@@ -99,16 +99,14 @@ public class PlayerMovements : MonoBehaviour
     {
         if (_playerBody.OnWall)
         {
-            _playerBody.IsWallGrabing = true;
+            _playerBody.IsWallGrabbing = true;
         }
 
-        if (_playerBody.IsWallGrabing)
+        if (_playerBody.IsWallGrabbing)
         {
             float newYVelocity = verticalInput * _speed * .4f;
-            _playerBody.Velocity = new Vector2(_playerBody.Velocity.x,  newYVelocity + _playerBody.GravityStrenght);
+            _playerBody.Velocity = new Vector2(_playerBody.Velocity.x,  newYVelocity + _playerBody.GravityStrength);
         }
-        
-
     }
 
     public void Die()

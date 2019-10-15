@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 
@@ -21,7 +19,7 @@ public class CustomPhysics : MonoBehaviour
     // Physics tuning
     [Range(0, 1)] [SerializeField] private float _dragStrength;
     [Min(0)] [SerializeField] private float _gravityStrength = 1.5f;
-    public float GravityStrenght => _gravityStrength;
+    public float GravityStrength => _gravityStrength;
 
     // Speed under which the movement is completely stopped
     [Min(0)] [SerializeField] private float _minimumSpeed = 0.001f;
@@ -36,6 +34,9 @@ public class CustomPhysics : MonoBehaviour
         set { _velocity = value; }
     }
 
+    // Scale of the collider used to control inputs and movement.
+    [SerializeField] private float _inputColliderScale = 1.4f;
+    
     [SerializeField] private bool[] _collidingSide = new bool[4];
 
     public bool OnGround => _collidingSide[3];
@@ -44,18 +45,18 @@ public class CustomPhysics : MonoBehaviour
     public Vector2 WallNormal => _collidingSide[0] ? Vector2.left : _collidingSide[1] ? Vector2.right : Vector2.zero;
 
     // Controls whether or not the player falls through platforms
-    [SerializeField] private bool _falling;
+    [Unity.Collections.ReadOnlyAttribute][SerializeField] private bool _falling;
     public bool Falling
     {
         get { return _falling; }
         set { _falling = value; }
     }
 
-    [SerializeField] private bool _isWallGrabing = false;
-    public bool IsWallGrabing
+    [SerializeField] private bool _isWallGrabbing = false;
+    public bool IsWallGrabbing
     {
-        get { return _isWallGrabing;}
-        set { _isWallGrabing = value; }
+        get { return _isWallGrabbing;}
+        set { _isWallGrabbing = value; }
     }
 
     private void Start()
@@ -89,8 +90,8 @@ public class CustomPhysics : MonoBehaviour
         {
             downVelocity *= 0.2f;
         }
-
-        if (_isWallGrabing)
+        
+        if (_isWallGrabbing)
         {
             downVelocity = 0;
         }
@@ -171,13 +172,39 @@ public class CustomPhysics : MonoBehaviour
             }
             else
             {
-                _collidingSide[2 * axis] = false;
-                _collidingSide[2 * axis + 1] = false;
-
-                if (axis == (int)Axis.Y)
+                if (axis == (int) Axis.Y)
                 {
                     _falling = false;
                 }
+            }
+        }
+
+        // Reset collisions
+        for (var i = 0; i < _collidingSide.Length; i++)
+        {
+            _collidingSide[i] = false;
+        }
+
+        // Cast a slightly bigger box around the player
+        RaycastHit2D[] surroundingHits = Physics2D.BoxCastAll(
+            _transform.position,
+            _transform.lossyScale * _inputColliderScale,
+            0,
+            Vector2.zero,
+            0);
+
+        // For each collider hit, check what is the biggest axis of its norm and adjust the colliding sides.
+        foreach (RaycastHit2D hit in surroundingHits)
+        {
+            Axis biggestAxis =  Math.Abs(hit.normal[(int) Axis.X]) > Math.Abs(hit.normal[(int) Axis.Y]) ? Axis.X : Axis.Y;
+
+            if (hit.normal[(int) biggestAxis] > 0)
+            {
+                _collidingSide[(int) biggestAxis * 2 + 1] = true;
+            }
+            else
+            {
+                _collidingSide[(int) biggestAxis * 2] = true;
             }
         }
 
@@ -206,25 +233,7 @@ public class CustomPhysics : MonoBehaviour
         // If it is not, then null it.
         if (_velocity[axis] * raycastHit.normal[axis] < 0)
         {
-            // Checks the side of the collision
-            if (_velocity[axis] > 0)
-            {
-                _collidingSide[2 * axis] = true;
-                _collidingSide[2 * axis + 1] = false;
-            }
-            else if (_velocity[axis] < 0)
-            {
-                _collidingSide[2 * axis] = false;
-                _collidingSide[2 * axis + 1] = true;
-            }
-            else
-            {
-                _collidingSide[2 * axis] = false;
-                _collidingSide[2 * axis + 1] = false;
-            }
-
             _velocity[axis] = 0;
-
         }
 
         // Compute the position that prevents the collision
