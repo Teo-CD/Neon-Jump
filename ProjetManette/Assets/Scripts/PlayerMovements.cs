@@ -75,6 +75,7 @@ public class PlayerMovements : MonoBehaviour
                 // WallJump
                 Vector2 wallJumpVelocity = new Vector2(_wallJumpVector.x * _playerBody.WallNormal.x, _wallJumpVector.y);
                 targetVelocity = wallJumpVelocity.normalized * _wallJumpForce;
+                _canDoubleJump = true;
             }
             else if (!_playerBody.OnGround && _canDoubleJump)
             {
