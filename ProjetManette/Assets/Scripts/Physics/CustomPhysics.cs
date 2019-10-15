@@ -61,38 +61,37 @@ public class CustomPhysics : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _velocity *= (1 - _dragStrength);
+#if DEBUG
         if (OnGround)
         {
             GetComponentInParent<SpriteRenderer>().color = Color.green;
-            _velocity.y -= _gravityStrength;
         }
         else if (OnWall)
         {
             GetComponentInParent<SpriteRenderer>().color = Color.white;
-            if (_isWallGrabing)
-            {
-                _velocity.y = 0;
-            }
-
-            else if (_velocity.y <= -0.5f)
-            {
-                _velocity.y -= _gravityStrength * .2f; // Sliding effect 
-                // We need to add small horiz velocity opposite to wall normal so that it stays in collision
-            }
-            else
-            {
-                _velocity.y -= _gravityStrength;
-            }
-
         }
         else
         {
             GetComponentInParent<SpriteRenderer>().color = Color.red;
-            _velocity.y -= _gravityStrength;
         }
+#endif
+        
+        _velocity *= (1 - _dragStrength);
+        
+        var downVelocity = _gravityStrength;
 
-
+        // Slow down the fall if leaning on a wall
+        if (OnWall && _velocity.y < 0)
+        {
+            downVelocity *= 0.2f;
+        }
+        _velocity.y -= downVelocity;
+        
+        if (_isWallGrabing)
+        {
+            _velocity.y = 0;
+        }
+        
         // Null the speed if it is too small
         if (Math.Abs(_velocity.x) < _minimumSpeed)
         {
@@ -112,10 +111,11 @@ public class CustomPhysics : MonoBehaviour
 
             _transform.position += new Vector3(deltaPos.x, deltaPos.y);
         }
-
+        
+#if DEBUG
         Debug.DrawLine(_transform.position, _transform.position + new Vector3(Velocity.normalized.x, 0), Color.green);
         Debug.DrawLine(_transform.position, _transform.position + new Vector3(0, Velocity.normalized.y), Color.green);
-
+#endif
     }
 
     /// <summary>
