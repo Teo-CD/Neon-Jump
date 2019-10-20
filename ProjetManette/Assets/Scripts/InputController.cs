@@ -5,6 +5,7 @@ using UnityEngine;
 public class InputController : MonoBehaviour
 {
     [SerializeField] PlayerMovements playerMovements;
+    [SerializeField] AudioSource _audioSource;
     private float timer;
 
     private bool _holdingJump;
@@ -43,12 +44,14 @@ public class InputController : MonoBehaviour
         }
         else if (Input.GetButton("LB"))
         {
-            Debug.Log("VertInput " + verticalInput);   
             playerMovements.WallGrab(verticalInput);
         }
-
         else
         {
+            if (jumpAction && !_audioSource.isPlaying)
+            {
+                _audioSource.Play();
+            }
             playerMovements.Move(horizontalInput, jumpAction);
         }
 

@@ -56,6 +56,9 @@ public class PlayerMovements : MonoBehaviour
 
     public void Move(float horizontalMove, bool jump)
     {
+        //Make sure to quit wall grabing state
+        _playerBody.IsWallGrabing = false;
+
         float currentSpeed = _speed;
         if (!_playerBody.OnGround) { currentSpeed = _speed * _airborneSpeedMultiplier; }
 
@@ -105,7 +108,7 @@ public class PlayerMovements : MonoBehaviour
         if (_playerBody.IsWallGrabing)
         {
             float newYVelocity = verticalInput * _speed * .4f;
-            _playerBody.Velocity = new Vector2(_playerBody.Velocity.x,  newYVelocity + _playerBody.GravityStrenght);
+            _playerBody.Velocity = new Vector2(_playerBody.Velocity.x,  newYVelocity );
         }
         
 
