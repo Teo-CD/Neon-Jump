@@ -50,14 +50,14 @@ public class PlayerMovements : MonoBehaviour
         if (_playerBody.OnGround)
         {
             _canDoubleJump = true;
-            _playerBody.IsWallGrabing = false;
+            _playerBody.IsWallGrabbing = false;
         }
     }
 
     public void Move(float horizontalMove, bool jump)
     {
         //Make sure to quit wall grabing state
-        _playerBody.IsWallGrabing = false;
+        _playerBody.IsWallGrabbing = false;
 
         float currentSpeed = _speed;
         if (!_playerBody.OnGround) { currentSpeed = _speed * _airborneSpeedMultiplier; }
@@ -67,7 +67,7 @@ public class PlayerMovements : MonoBehaviour
 
         if (jump)
         {
-            _playerBody.IsWallGrabing = false;
+            _playerBody.IsWallGrabbing = false;
             if (_playerBody.OnGround)
             {
                 // Jump
@@ -78,6 +78,7 @@ public class PlayerMovements : MonoBehaviour
                 // WallJump
                 Vector2 wallJumpVelocity = new Vector2(_wallJumpVector.x * _playerBody.WallNormal.x, _wallJumpVector.y);
                 targetVelocity = wallJumpVelocity.normalized * _wallJumpForce;
+                _canDoubleJump = true;
             }
             else if (!_playerBody.OnGround && _canDoubleJump)
             {
@@ -102,16 +103,14 @@ public class PlayerMovements : MonoBehaviour
     {
         if (_playerBody.OnWall)
         {
-            _playerBody.IsWallGrabing = true;
+            _playerBody.IsWallGrabbing = true;
         }
 
-        if (_playerBody.IsWallGrabing)
+        if (_playerBody.IsWallGrabbing)
         {
             float newYVelocity = verticalInput * _speed * .4f;
             _playerBody.Velocity = new Vector2(_playerBody.Velocity.x,  newYVelocity );
         }
-        
-
     }
 
     public void Die()
