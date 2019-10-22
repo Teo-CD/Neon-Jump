@@ -45,15 +45,8 @@ public class InputController : MonoBehaviour
             timer = playerMovements.DashCooldown;
             StartCoroutine(DashTrailFX());
         }
-        //  else if (Input.GetButton("X"))
-        //      // Do smth
-        //      ;
-        //  else if (Input.GetButton("Y"))
-        //      // Do smth 
-        //      ;
-        //  else ;
-
-        // FIXME : Find the best way to register the combination to go down
+        
+        
         if (jump && Input.GetAxis("Vertical") < 0)
         {
             playerMovements.Fall();

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConveyerBelt : CustomMonoBehaviour
+public class ConveyorBelt : CustomMonoBehaviour
 {
     [SerializeField] private float _speed = 3;
     [SerializeField] private string _axis = "X";
@@ -20,15 +20,16 @@ public class ConveyerBelt : CustomMonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            CustomPhysics _playerBody = collision.gameObject.GetComponent<CustomPhysics>();
             if (_isX)
             {
-                float newX = collision.collider.transform.position.x + _speed * Time.fixedDeltaTime;
-                collision.collider.transform.position = new Vector3(newX, collision.collider.transform.position.y, 0);
+                // FIXME : Find a better way to have the player move on conveyors
+                // Currently inputs are not taken into account for some reason.
+                _playerBody.Velocity = _playerBody.Velocity + Vector2.right * _speed;
             }
             else
             {
-                float newY = collision.collider.transform.position.y + _speed * Time.fixedDeltaTime;
-                collision.collider.transform.position = new Vector3(collision.collider.transform.position.x, newY, 0);
+                _playerBody.Velocity = _playerBody.Velocity + Vector2.up * _speed;
             }
         }
     }

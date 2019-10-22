@@ -23,6 +23,8 @@ public class CustomPhysics : MonoBehaviour
 
     // Speed under which the movement is completely stopped
     [Min(0)] [SerializeField] private float _minimumSpeed = 0.001f;
+    // Deactivated if zero
+    [Min(0)] [SerializeField] private float _maximumSpeed = 30;
 
 
     // Entity related data
@@ -111,13 +113,18 @@ public class CustomPhysics : MonoBehaviour
 
         DetectCollision();
 
+        if (_maximumSpeed > 0 && Velocity.magnitude >= _maximumSpeed)
+        {
+            Velocity = Velocity.normalized * _maximumSpeed;
+        }
+        
         if (Math.Abs(Velocity.magnitude) >= _minimumSpeed)
         {
             Vector2 deltaPos = Time.fixedDeltaTime * Velocity;
 
             _transform.position += new Vector3(deltaPos.x, deltaPos.y);
         }
-        
+
 #if DEBUG
         Debug.DrawLine(_transform.position, _transform.position + new Vector3(Velocity.normalized.x, 0), Color.green);
         Debug.DrawLine(_transform.position, _transform.position + new Vector3(0, Velocity.normalized.y), Color.green);
@@ -165,9 +172,6 @@ public class CustomPhysics : MonoBehaviour
 
             if (raycastHit.collider != null)
             {
-                collisionCount++;
-                HandleCollisionEnterStay(raycastHit.collider);
-
                 CollisionUpdate(raycastHit, axis);
             }
             else
@@ -193,9 +197,12 @@ public class CustomPhysics : MonoBehaviour
             Vector2.zero,
             0);
 
-        // For each collider hit, check what is the biggest axis of its norm and adjust the colliding sides.
+        // For each collider hit, handle collision and check what is the biggest axis of its norm and adjust the colliding sides.
         foreach (RaycastHit2D hit in surroundingHits)
         {
+            collisionCount++;
+            HandleCollisionEnterStay(hit.collider);
+            
             Axis biggestAxis =  Math.Abs(hit.normal[(int) Axis.X]) > Math.Abs(hit.normal[(int) Axis.Y]) ? Axis.X : Axis.Y;
 
             if (hit.normal[(int) biggestAxis] > 0)
