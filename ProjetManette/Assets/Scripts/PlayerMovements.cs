@@ -109,7 +109,7 @@ public class PlayerMovements : MonoBehaviour
         if (_playerBody.IsWallGrabbing)
         {
             float newYVelocity = verticalInput * _speed * .4f;
-            _playerBody.Velocity = new Vector2(_playerBody.Velocity.x,  newYVelocity );
+            _playerBody.Velocity = new Vector2(0,  newYVelocity );
         }
     }
 
