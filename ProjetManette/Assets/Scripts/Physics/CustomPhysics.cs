@@ -165,9 +165,6 @@ public class CustomPhysics : MonoBehaviour
 
             if (raycastHit.collider != null)
             {
-                collisionCount++;
-                HandleCollisionEnterStay(raycastHit.collider);
-
                 CollisionUpdate(raycastHit, axis);
             }
             else
@@ -193,9 +190,12 @@ public class CustomPhysics : MonoBehaviour
             Vector2.zero,
             0);
 
-        // For each collider hit, check what is the biggest axis of its norm and adjust the colliding sides.
+        // For each collider hit, handle collision and check what is the biggest axis of its norm and adjust the colliding sides.
         foreach (RaycastHit2D hit in surroundingHits)
         {
+            collisionCount++;
+            HandleCollisionEnterStay(hit.collider);
+            
             Axis biggestAxis =  Math.Abs(hit.normal[(int) Axis.X]) > Math.Abs(hit.normal[(int) Axis.Y]) ? Axis.X : Axis.Y;
 
             if (hit.normal[(int) biggestAxis] > 0)

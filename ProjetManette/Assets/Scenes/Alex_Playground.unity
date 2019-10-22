@@ -1485,7 +1485,7 @@ GameObject:
   - component: {fileID: 874219763}
   - component: {fileID: 874219762}
   m_Layer: 8
-  m_Name: ConveyerBelt (1)
+  m_Name: ConveyorBelt (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1651,9 +1651,10 @@ MonoBehaviour:
   _gravityStrength: 1.5
   _minimumSpeed: 0.001
   _velocity: {x: 0, y: 0}
+  _inputColliderScale: 1.4
   _collidingSide: 00000000
   _falling: 0
-  _isWallGrabing: 0
+  _isWallGrabbing: 0
 --- !u!61 &1152975020
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2174,7 +2175,7 @@ GameObject:
   - component: {fileID: 1863471182}
   - component: {fileID: 1863471184}
   m_Layer: 8
-  m_Name: ConveyerBelt
+  m_Name: ConveyorBelt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

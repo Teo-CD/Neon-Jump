@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConveyerBelt : CustomMonoBehaviour
+public class ConveyorBelt : CustomMonoBehaviour
 {
     [SerializeField] private float _speed = 3;
     [SerializeField] private string _axis = "X";
@@ -20,15 +20,14 @@ public class ConveyerBelt : CustomMonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            CustomPhysics _playerBody = collision.gameObject.GetComponent<CustomPhysics>();
             if (_isX)
             {
-                float newX = collision.collider.transform.position.x + _speed * Time.fixedDeltaTime;
-                collision.collider.transform.position = new Vector3(newX, collision.collider.transform.position.y, 0);
+                _playerBody.Velocity = new Vector2(_speed, _playerBody.Velocity.y);
             }
             else
             {
-                float newY = collision.collider.transform.position.y + _speed * Time.fixedDeltaTime;
-                collision.collider.transform.position = new Vector3(collision.collider.transform.position.x, newY, 0);
+                _playerBody.Velocity = new Vector2(_playerBody.Velocity.x, _speed);
             }
         }
     }
