@@ -16,7 +16,6 @@ public class PlayerMovements : MonoBehaviour
 
     private float _jumpBuffer = .15f;
     [Range(0, .3f)] [SerializeField] float _movementSmoothing = .05f;
-    bool _isDoubleJumping = false;
 
     bool _canDoubleJump = true;
 

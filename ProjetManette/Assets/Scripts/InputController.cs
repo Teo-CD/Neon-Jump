@@ -27,7 +27,6 @@ public class InputController : MonoBehaviour
             // Dash
             horizontalInput *= playerMovements.DashSpeed;
             timer = playerMovements.DashCooldown;
-
         }
         
         

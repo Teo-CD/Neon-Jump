@@ -23,11 +23,13 @@ public class ConveyorBelt : CustomMonoBehaviour
             CustomPhysics _playerBody = collision.gameObject.GetComponent<CustomPhysics>();
             if (_isX)
             {
-                _playerBody.Velocity = new Vector2(_speed, _playerBody.Velocity.y);
+                // FIXME : Find a better way to have the player move on conveyors
+                // Currently inputs are not taken into account for some reason.
+                _playerBody.Velocity = _playerBody.Velocity + Vector2.right * _speed;
             }
             else
             {
-                _playerBody.Velocity = new Vector2(_playerBody.Velocity.x, _speed);
+                _playerBody.Velocity = _playerBody.Velocity + Vector2.up * _speed;
             }
         }
     }
