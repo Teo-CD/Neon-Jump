@@ -234,6 +234,11 @@ public class CustomPhysics : MonoBehaviour
             return;
         }
 
+        if (raycastHit.collider.gameObject.CompareTag("DeathZone"))
+        {
+            gameObject.GetComponent<PlayerMovements>().Die();
+        }
+
         _falling = false;
 
         // Checks if the movement is in the same direction as the impact normal
