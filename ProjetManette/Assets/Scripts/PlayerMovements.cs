@@ -41,6 +41,7 @@ public class PlayerMovements : MonoBehaviour
     {
         _playerBody = GetComponent<CustomPhysics>();
         _spawnPos = gameObject.transform.position;
+        GameObject.Find("InputController").GetComponent<InputController>().Reinitiate();
     }
 
 

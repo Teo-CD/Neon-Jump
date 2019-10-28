@@ -5,9 +5,18 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Alex_Playground.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Level 1.unity
+    guid: baa621bfcf16b8b4085ad0f45cae30c8
+  - enabled: 1
+    path: Assets/Scenes/Level 2.unity
+    guid: 20a049e24536b9144bd10ecc438bb892
+  - enabled: 1
+    path: Assets/Scenes/Level 3.unity
+    guid: a599f191e7ac39c499d98829e58be496
   - enabled: 1
     path: Assets/Scenes/WinScreen.unity
     guid: 81884a4553cda2d458cb856361a4c14a

@@ -5,15 +5,44 @@ using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
-    [SerializeField] PlayerMovements playerMovements;
-    [SerializeField] GameObject _dashTrailFX;
-    [SerializeField] GameObject _dashCdFX;
+    InputController instance;
+
+    PlayerMovements playerMovements;
+    GameObject Player;
     bool _canDash = true;
-    [SerializeField] AudioSource _audioSource;
+    FXManager fXManager;
+    [SerializeField] AudioSource _jumpSFX;
+    [SerializeField] AudioSource _dashSFX;
+
 
     private float timer;
 
     private bool _holdingJump;
+
+
+    private void Awake()
+    {
+        if (instance is null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+
+        Reinitiate();
+    }
+
+
+    public void Reinitiate()
+    {
+        Player = GameObject.FindGameObjectWithTag("Player");
+        fXManager = Player.GetComponent<FXManager>();
+        playerMovements = Player.GetComponent<PlayerMovements>();
+    }
 
     void FixedUpdate()
     {
@@ -32,7 +61,7 @@ public class InputController : MonoBehaviour
         {
             if (!_canDash)
             {
-                StartCoroutine(DashCdFX());
+                fXManager.PlayDashCdFX();
             }
             _canDash = true;
         }
@@ -43,10 +72,14 @@ public class InputController : MonoBehaviour
             // Dash
             horizontalInput *= playerMovements.DashSpeed;
             timer = playerMovements.DashCooldown;
-            StartCoroutine(DashTrailFX());
+            fXManager.PlayDashTrailFX();
+            if (!_dashSFX.isPlaying)
+            {
+                _dashSFX.Play();
+            }
         }
-        
-        
+
+
         if (jump && Input.GetAxis("Vertical") < 0)
         {
             playerMovements.Fall();
@@ -57,28 +90,14 @@ public class InputController : MonoBehaviour
         }
         else
         {
-            if (jumpAction && !_audioSource.isPlaying)
+            if (jumpAction && !_jumpSFX.isPlaying)
             {
-                _audioSource.Play();
+                _jumpSFX.Play();
+                fXManager.PlayJumpFX();
             }
             playerMovements.Move(horizontalInput, jumpAction);
         }
 
     }
 
-    IEnumerator DashTrailFX()
-    {
-        _dashTrailFX.SetActive(true);
-        yield return new WaitForSeconds(1f);
-        _dashTrailFX.SetActive(false);
-
-    }
-
-    IEnumerator DashCdFX()
-    {
-        _dashCdFX.SetActive(true);
-        yield return new WaitForSeconds(.9f);
-        _dashCdFX.SetActive(false);
-
-    }
 }
