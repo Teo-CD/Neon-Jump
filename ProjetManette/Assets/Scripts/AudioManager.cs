@@ -5,7 +5,7 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
 
-    AudioManager instance;
+    public static AudioManager instance;
 
     void Awake()
     {

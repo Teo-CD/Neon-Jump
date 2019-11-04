@@ -10,7 +10,7 @@ public class MenuManager : MonoBehaviour
     public void StartGame()
     {
         _animator.SetTrigger("Fade");
-        Invoke("LoadGame", 1);
+        Invoke("LoadGame", .95f);
     }
 
     public void QuitGame()
@@ -20,6 +20,6 @@ public class MenuManager : MonoBehaviour
 
     private void LoadGame()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 }

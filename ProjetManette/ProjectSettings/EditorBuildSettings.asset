@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Alex_Playground.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
+    path: Assets/Scenes/StartScreen.unity
+    guid: c73f1d6d22942bf4dadbea6562b9a2ff
+  - enabled: 1
     path: Assets/Scenes/Level 1.unity
     guid: baa621bfcf16b8b4085ad0f45cae30c8
   - enabled: 1

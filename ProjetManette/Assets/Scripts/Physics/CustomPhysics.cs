@@ -68,20 +68,20 @@ public class CustomPhysics : MonoBehaviour
 
     private void FixedUpdate()
     {
-#if DEBUG
-        if (OnGround)
-        {
-            GetComponentInParent<SpriteRenderer>().color = Color.green;
-        }
-        else if (OnWall)
-        {
-            GetComponentInParent<SpriteRenderer>().color = Color.white;
-        }
-        else
-        {
-            GetComponentInParent<SpriteRenderer>().color = Color.red;
-        }
-#endif
+//#if DEBUG
+//        if (OnGround)
+//        {
+//            GetComponentInParent<SpriteRenderer>().color = Color.green;
+//        }
+//        else if (OnWall)
+//        {
+//            GetComponentInParent<SpriteRenderer>().color = Color.white;
+//        }
+//        else
+//        {
+//            GetComponentInParent<SpriteRenderer>().color = Color.red;
+//        }
+//#endif
         
         _velocity *= (1 - _dragStrength);
         

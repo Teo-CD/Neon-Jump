@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class LoadNextScene : MonoBehaviour
 {
     private int _sceneToLoadIndex;
-    //[SerializeField] Animator _anim;
+    [SerializeField] Animator _anim;
 
     void Start()
     {
@@ -16,8 +16,8 @@ public class LoadNextScene : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Invoke("Load", 1f);
-        //_anim.SetTrigger("FadeOut");
+        Invoke("Load", .35f);
+        _anim.SetTrigger("FadeOut");
     }
 
     void Load()

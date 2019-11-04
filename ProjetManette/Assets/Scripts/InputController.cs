@@ -2,13 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InputController : MonoBehaviour
 {
-    InputController instance;
+    private static InputController instance;
 
     PlayerMovements playerMovements;
-    GameObject Player;
+    GameObject _player;
+    GameObject _inputsPanel;
     bool _canDash = true;
     FXManager fXManager;
     [SerializeField] AudioSource _jumpSFX;
@@ -39,9 +41,17 @@ public class InputController : MonoBehaviour
 
     public void Reinitiate()
     {
-        Player = GameObject.FindGameObjectWithTag("Player");
-        fXManager = Player.GetComponent<FXManager>();
-        playerMovements = Player.GetComponent<PlayerMovements>();
+        _player = GameObject.FindGameObjectWithTag("Player");
+        fXManager = _player.GetComponent<FXManager>();
+        playerMovements = _player.GetComponent<PlayerMovements>();
+        _jumpSFX = GameObject.Find("Jump_SFX").GetComponent<AudioSource>();
+        _dashSFX = GameObject.Find("Dash_SFX").GetComponent<AudioSource>();
+        _inputsPanel = GameObject.Find("Inputs_Panel");
+        if (SceneManager.GetActiveScene().buildIndex != 1)
+        {
+            _inputsPanel.SetActive(false);
+        }
+
     }
 
     void FixedUpdate()
@@ -52,6 +62,12 @@ public class InputController : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");
         //float crossPosition = 10 * Input.GetAxis("Horizontal_Cross");
         bool jump = Input.GetButton("A") || Input.GetKey(KeyCode.Space);
+
+        if (Input.GetButtonDown("Y"))
+        {
+            _inputsPanel.SetActive(!_inputsPanel.activeInHierarchy);
+        }
+
 
         // The player has to stop pressing jump to jump again
         bool jumpAction = jump & !_holdingJump;
@@ -92,7 +108,7 @@ public class InputController : MonoBehaviour
         {
             if (jumpAction && !_jumpSFX.isPlaying)
             {
-                _jumpSFX.Play();
+                StartCoroutine(PlaySFX(_jumpSFX));
                 fXManager.PlayJumpFX();
             }
             playerMovements.Move(horizontalInput, jumpAction);
@@ -100,4 +116,10 @@ public class InputController : MonoBehaviour
 
     }
 
+
+    IEnumerator PlaySFX(AudioSource audioToPlay)
+    {
+        yield return new WaitForSeconds(.15f);
+        audioToPlay.Play();
+    }
 }
